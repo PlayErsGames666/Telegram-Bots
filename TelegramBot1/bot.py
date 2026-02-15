@@ -1,8 +1,17 @@
 import telebot
 import config
 import random
+import os
 
+from dotenv import load_dotenv
 from telebot import types
+
+
+load_dotenv()
+
+TOKEN = os.getenv("TOKEN")
+
+
 
 
 bot = telebot.TeleBot(config.TOKEN)
