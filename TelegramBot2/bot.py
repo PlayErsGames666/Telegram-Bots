@@ -2,8 +2,9 @@ import config
 import telebot
 import requests
 import json
-import os
+import googletrans
 
+from googletrans import Translator
 from telebot import types
 from config import  *
 
@@ -42,14 +43,21 @@ def get_weather(message):
     res = requests.get(f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={API}&units=metric")
     if res.status_code == 200:
         data = json.loads(res.text)
-        temp = data['main']['temp']
-        tem = data['weather'][0]['description']
-        bot.reply_to(message, f"Сейчас погода: {temp, tem}")
-
+        temp = round(data['main']['temp'])
+        description = data['weather'][0]['description']
+        translator = Translator()
+        description = translator.translate(description, dest='ru').text
+        description = description.capitalize()
 
         image = 'picture/sun.png' if temp > 5.0 else 'picture/sunny.png'
         file = open('./' + image, 'rb')
-        bot.send_photo(message.chat.id, file)
+
+        bot.send_photo(
+            chat_id=message.chat.id,
+            photo=file,
+            caption=f"Сейчас погода: {temp}°C, {description}.")
+
+        file.close()
     else:
         bot.reply_to(message, f"Город указан не верно")
 
